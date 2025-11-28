@@ -60,3 +60,20 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# MLX/Models cache
+.cache/
+*.mlx
+*.safetensors
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# macOS
+.DS_Store
+*.xcworkspace
+# Tests/SpeculativeDecodingTests/VerificationTests.swift
+Package.resolved
