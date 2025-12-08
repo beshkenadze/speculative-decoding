@@ -107,10 +107,10 @@ public final class DraftTargetPair: @unchecked Sendable {
     
     public static let recommendedPairs: [RecommendedPair] = [
         RecommendedPair(
-            draftModelId: "mlx-community/Qwen3-0.6B-4bit",
-            targetModelId: "mlx-community/Qwen3-8B-4bit",
-            family: "Qwen3",
-            description: "Qwen3 family - general purpose"
+            draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+            targetModelId: "mlx-community/Qwen2.5-3B-Instruct-4bit",
+            family: "Qwen2.5",
+            description: "Qwen2.5 family - general purpose"
         ),
         RecommendedPair(
             draftModelId: "mlx-community/Llama-3.2-1B-Instruct-4bit",
@@ -119,16 +119,10 @@ public final class DraftTargetPair: @unchecked Sendable {
             description: "Llama 3.2 family"
         ),
         RecommendedPair(
-            draftModelId: "mlx-community/SmolLM3-0.5B-Instruct-4bit",
-            targetModelId: "mlx-community/SmolLM3-3B-Instruct-4bit",
-            family: "SmolLM3",
-            description: "SmolLM3 family - lightweight"
-        ),
-        RecommendedPair(
-            draftModelId: "mlx-community/gemma-3-1b-it-4bit",
-            targetModelId: "mlx-community/gemma-3-4b-it-4bit",
-            family: "gemma-3",
-            description: "Gemma 3 family - strong reasoning"
+            draftModelId: "mlx-community/SmolLM2-135M-Instruct-4bit",
+            targetModelId: "mlx-community/SmolLM2-1.7B-Instruct-4bit",
+            family: "SmolLM2",
+            description: "SmolLM2 family - lightweight"
         ),
     ]
     
