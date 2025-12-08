@@ -52,8 +52,8 @@ import SpeculativeDecoding
 
 let output = try await SpeculativeDecoding.generate(
     prompt: "Explain quantum computing:",
-    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
-    targetModelId: "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
+    targetModelId: "mlx-community/Qwen3-8B-4bit"
 )
 print(output)
 ```
@@ -63,8 +63,8 @@ print(output)
 ```swift
 let stream = try await SpeculativeDecoding.generateStream(
     prompt: "Write a haiku about Swift:",
-    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
-    targetModelId: "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
+    targetModelId: "mlx-community/Qwen3-8B-4bit"
 )
 
 for await event in stream {
@@ -84,8 +84,8 @@ for await event in stream {
 ```swift
 // Load models once, generate multiple times
 let modelPair = try await DraftTargetPair.load(
-    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
-    targetModelId: "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
+    targetModelId: "mlx-community/Qwen3-8B-4bit"
 )
 
 let parameters = SpeculativeParameters(
@@ -111,8 +111,8 @@ Build and run the CLI:
 ```bash
 swift build -c release
 .build/release/speculative-cli generate \
-    --draft-model mlx-community/Qwen2.5-0.5B-Instruct-4bit \
-    --target-model mlx-community/Qwen2.5-7B-Instruct-4bit \
+    --draft-model mlx-community/Qwen3-0.6B-4bit \
+    --target-model mlx-community/Qwen3-8B-4bit \
     --prompt "Explain neural networks:" \
     --max-tokens 256 \
     --stats
@@ -135,11 +135,11 @@ speculative-cli list-models
 
 | Draft Model | Target Model | Use Case |
 |-------------|--------------|----------|
-| Qwen2.5-0.5B-4bit | Qwen2.5-7B-4bit | General purpose |
-| Qwen2.5-0.5B-4bit | Qwen2.5-3B-4bit | Memory constrained |
+| Qwen3-0.6B-4bit | Qwen3-8B-4bit | General purpose |
+| Qwen3-0.6B-4bit | Qwen3-4B-4bit | Memory constrained |
 | Llama-3.2-1B-4bit | Llama-3.2-3B-4bit | Llama family |
-| SmolLM2-135M-4bit | SmolLM2-1.7B-4bit | Lightweight |
-| gemma-2-2b-4bit | gemma-2-9b-4bit | Strong reasoning |
+| SmolLM3-0.5B-4bit | SmolLM3-3B-4bit | Lightweight |
+| gemma-3-1b-4bit | gemma-3-4b-4bit | Strong reasoning |
 
 ## Configuration Options
 
@@ -217,7 +217,7 @@ import SpeculativeDecoding
 // Load Mamba drafter with transformer target
 let pair = try await MambaDraftTargetPair.load(
     draftModelId: "state-spaces/mamba-130m-hf",
-    targetModelId: "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    targetModelId: "mlx-community/Qwen3-8B-4bit"
 )
 
 let generator = MambaSpeculativeGenerator(modelPair: pair)
@@ -234,7 +234,7 @@ let result = try await generator.generate(prompt: "Hello") { _ in .more }
 
 ### Benchmark Results
 
-Comparing Mamba (130M) vs Transformer (500M) as draft models with Qwen2.5-3B target:
+Comparing Mamba (130M) vs Transformer (500M) as draft models with Qwen3-4B target:
 
 | Drafter | Speed | Acceptance | Tokens/Step |
 |---------|-------|------------|-------------|
@@ -253,8 +253,8 @@ Comparing Mamba (130M) vs Transformer (500M) as draft models with Qwen2.5-3B tar
 
 ```bash
 .build/release/speculative-cli benchmark \
-    --transformer-draft mlx-community/Qwen2.5-0.5B-Instruct-4bit \
-    --target-model mlx-community/Qwen2.5-3B-Instruct-4bit \
+    --transformer-draft mlx-community/Qwen3-0.6B-4bit \
+    --target-model mlx-community/Qwen3-4B-4bit \
     --tokens 128 --runs 3
 ```
 
