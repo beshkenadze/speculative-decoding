@@ -26,10 +26,10 @@ struct Generate: AsyncParsableCommand {
     )
     
     @Option(name: .long, help: "Draft model ID")
-    var draftModel: String = "mlx-community/Qwen2.5-0.5B-Instruct-4bit"
-    
+    var draftModel: String = "mlx-community/Qwen3-0.6B-4bit"
+
     @Option(name: .long, help: "Target model ID")
-    var targetModel: String = "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    var targetModel: String = "mlx-community/Qwen3-8B-4bit"
     
     @Option(name: .shortAndLong, help: "Input prompt")
     var prompt: String
@@ -145,10 +145,10 @@ struct Benchmark: AsyncParsableCommand {
     )
 
     @Option(name: .long, help: "Target model ID")
-    var targetModel: String = "mlx-community/Qwen2.5-7B-Instruct-4bit"
+    var targetModel: String = "mlx-community/Qwen3-8B-4bit"
 
     @Option(name: .long, help: "Transformer draft model ID")
-    var transformerDraft: String = "mlx-community/Qwen2.5-0.5B-Instruct-4bit"
+    var transformerDraft: String = "mlx-community/Qwen3-0.6B-4bit"
 
     @Option(name: .long, help: "Mamba draft model ID (default: state-spaces/mamba-130m-hf)")
     var mambaDraft: String = "state-spaces/mamba-130m-hf"
