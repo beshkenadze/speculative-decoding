@@ -52,8 +52,8 @@ import SpeculativeDecoding
 
 let output = try await SpeculativeDecoding.generate(
     prompt: "Explain quantum computing:",
-    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
-    targetModelId: "mlx-community/Qwen3-8B-4bit"
+    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    targetModelId: "mlx-community/Qwen2.5-3B-Instruct-4bit"
 )
 print(output)
 ```
@@ -63,8 +63,8 @@ print(output)
 ```swift
 let stream = try await SpeculativeDecoding.generateStream(
     prompt: "Write a haiku about Swift:",
-    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
-    targetModelId: "mlx-community/Qwen3-8B-4bit"
+    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    targetModelId: "mlx-community/Qwen2.5-3B-Instruct-4bit"
 )
 
 for await event in stream {
@@ -84,8 +84,8 @@ for await event in stream {
 ```swift
 // Load models once, generate multiple times
 let modelPair = try await DraftTargetPair.load(
-    draftModelId: "mlx-community/Qwen3-0.6B-4bit",
-    targetModelId: "mlx-community/Qwen3-8B-4bit"
+    draftModelId: "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    targetModelId: "mlx-community/Qwen2.5-3B-Instruct-4bit"
 )
 
 let parameters = SpeculativeParameters(
@@ -111,8 +111,8 @@ Build and run the CLI:
 ```bash
 swift build -c release
 .build/release/speculative-cli generate \
-    --draft-model mlx-community/Qwen3-0.6B-4bit \
-    --target-model mlx-community/Qwen3-8B-4bit \
+    --draft-model mlx-community/Qwen2.5-0.5B-Instruct-4bit \
+    --target-model mlx-community/Qwen2.5-3B-Instruct-4bit \
     --prompt "Explain neural networks:" \
     --max-tokens 256 \
     --stats
@@ -135,11 +135,9 @@ speculative-cli list-models
 
 | Draft Model | Target Model | Use Case |
 |-------------|--------------|----------|
-| Qwen3-0.6B-4bit | Qwen3-8B-4bit | General purpose |
-| Qwen3-0.6B-4bit | Qwen3-4B-4bit | Memory constrained |
-| Llama-3.2-1B-4bit | Llama-3.2-3B-4bit | Llama family |
-| SmolLM3-0.5B-4bit | SmolLM3-3B-4bit | Lightweight |
-| gemma-3-1b-4bit | gemma-3-4b-4bit | Strong reasoning |
+| Qwen2.5-0.5B-Instruct-4bit | Qwen2.5-3B-Instruct-4bit | General purpose |
+| Llama-3.2-1B-Instruct-4bit | Llama-3.2-3B-Instruct-4bit | Llama family |
+| SmolLM2-135M-Instruct-4bit | SmolLM2-1.7B-Instruct-4bit | Lightweight |
 
 ## Configuration Options
 
@@ -172,12 +170,11 @@ The key insight is that verification is parallelizable - the target model can ch
 
 ## Performance
 
-Results on MacBook Pro M4 Pro with Qwen3 models:
+Results on MacBook Pro M4 Pro with Qwen2.5 models:
 
 | Drafter | Target | Speed | Acceptance | Tokens/Step |
 |---------|--------|-------|------------|-------------|
-| Qwen3-0.6B | Qwen3-4B | 81.4 tok/s | 76.3% | 4.85 |
-| Mamba-130M | Qwen3-4B | 98.1 tok/s | 100% | 6.05 |
+| Qwen2.5-0.5B | Qwen2.5-3B | 40 tok/s | 28% | 2.4 |
 
 Speedup depends on:
 - Draft/target model size ratio
@@ -216,7 +213,7 @@ import SpeculativeDecoding
 // Load Mamba drafter with transformer target
 let pair = try await MambaDraftTargetPair.load(
     draftModelId: "state-spaces/mamba-130m-hf",
-    targetModelId: "mlx-community/Qwen3-8B-4bit"
+    targetModelId: "mlx-community/Qwen2.5-3B-Instruct-4bit"
 )
 
 let generator = MambaSpeculativeGenerator(modelPair: pair)
@@ -233,27 +230,27 @@ let result = try await generator.generate(prompt: "Hello") { _ in .more }
 
 ### Benchmark Results
 
-Comparing Mamba (130M) vs Transformer (0.6B) as draft models with Qwen3-4B target on MacBook Pro M4 Pro:
+Comparing Mamba (130M) vs Transformer (0.5B) as draft models with Qwen2.5-3B target on MacBook Pro M4 Pro:
 
 | Drafter | Speed | Acceptance | Tokens/Step |
 |---------|-------|------------|-------------|
-| **Transformer (0.6B)** | 81.4 tok/s | 76.3% | 4.85 |
-| **Mamba (130M)** | 98.1 tok/s | 100% | 6.05 |
+| **Transformer (0.5B)** | 40 tok/s | 28% | 2.4 |
+| **Mamba (130M)** | 86 tok/s | 96%* | 5.8* |
 
-**Result: Mamba achieves 1.21x speedup** with higher acceptance rates.
+*\*Note: High acceptance rates with Mamba are due to vocabulary mismatch between Mamba (GPT-NeoX) and Qwen (custom). This is experimental and results may not be representative of true speculative decoding behavior.*
 
-#### Why Mamba Performs Well
+#### Why Mamba for Drafting
 
 1. **Faster drafting**: 130M Mamba is smaller with O(1) memory per token
-2. **High acceptance**: Nearly all drafted tokens (6.05/step) are accepted
+2. **Constant memory**: No KV-cache growth with sequence length
 3. **Efficient verification**: More tokens per target model forward pass
 
 #### Benchmark Command
 
 ```bash
 .build/release/speculative-cli benchmark \
-    --transformer-draft mlx-community/Qwen3-0.6B-4bit \
-    --target-model mlx-community/Qwen3-4B-4bit \
+    --transformer-draft mlx-community/Qwen2.5-0.5B-Instruct-4bit \
+    --target-model mlx-community/Qwen2.5-3B-Instruct-4bit \
     --tokens 128 --runs 3
 ```
 
