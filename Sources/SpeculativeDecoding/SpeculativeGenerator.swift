@@ -3,7 +3,7 @@
 
 import Foundation
 import MLX
-import MLXLMCommon
+@preconcurrency import MLXLMCommon
 import Tokenizers
 
 /// Main generator for speculative decoding.

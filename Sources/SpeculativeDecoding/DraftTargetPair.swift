@@ -3,7 +3,7 @@
 
 import Foundation
 import MLX
-import MLXLMCommon
+@preconcurrency import MLXLMCommon
 import MLXLLM
 import Tokenizers
 
@@ -19,21 +19,21 @@ public final class DraftTargetPair: @unchecked Sendable {
     }
     
     /// Access draft model via perform block
-    public func withDraftModel<R>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
+    public func withDraftModel<R: Sendable>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
         try await draftContainer.perform { context in
             try await action(context.model)
         }
     }
-    
-    /// Access target model via perform block  
-    public func withTargetModel<R>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
+
+    /// Access target model via perform block
+    public func withTargetModel<R: Sendable>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
         try await targetContainer.perform { context in
             try await action(context.model)
         }
     }
-    
+
     /// Access both models
-    public func withModels<R>(_ action: @Sendable (any LanguageModel, any LanguageModel) async throws -> R) async rethrows -> R {
+    public func withModels<R: Sendable>(_ action: @Sendable (any LanguageModel, any LanguageModel) async throws -> R) async rethrows -> R {
         let draftModel = await draftContainer.perform { $0.model }
         let targetModel = await targetContainer.perform { $0.model }
         return try await action(draftModel, targetModel)

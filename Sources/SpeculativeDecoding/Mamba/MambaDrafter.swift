@@ -204,7 +204,7 @@ public final class MambaDraftTargetPair: @unchecked Sendable {
     }
 
     /// Access the target model
-    public func withTargetModel<R>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
+    public func withTargetModel<R: Sendable>(_ action: @Sendable (any LanguageModel) async throws -> R) async rethrows -> R {
         try await targetContainer.perform { context in
             try await action(context.model)
         }
@@ -282,7 +282,7 @@ public struct MambaSpeculativeGenerator: Sendable {
         let generateStart = Date()
         let configuration = await modelPair.targetConfiguration
 
-        var currentToken = try await getInitialToken(
+        var currentToken = await getInitialToken(
             promptTokens: promptArray,
             targetCache: targetCache
         )
@@ -326,7 +326,7 @@ public struct MambaSpeculativeGenerator: Sendable {
 
             if effectiveDraftTokens.isEmpty {
                 // No draft tokens, fall back to regular generation
-                let nextToken = try await getNextToken(
+                let nextToken = await getNextToken(
                     previousToken: currentToken,
                     targetCache: targetCache
                 )
@@ -338,7 +338,7 @@ public struct MambaSpeculativeGenerator: Sendable {
             }
 
             // Verify draft tokens with target model
-            let targetLogits = try await verifyBatch(
+            let targetLogits = await verifyBatch(
                 previousToken: currentToken,
                 draftTokens: effectiveDraftTokens,
                 targetCache: targetCache
@@ -392,8 +392,8 @@ public struct MambaSpeculativeGenerator: Sendable {
     private func getInitialToken(
         promptTokens: MLXArray,
         targetCache: [KVCache]
-    ) async throws -> Int {
-        try await modelPair.withTargetModel { model in
+    ) async -> Int {
+        await modelPair.withTargetModel { model in
             let lastTokenIdx = promptTokens.size - 1
             let lastToken = promptTokens[lastTokenIdx].item(Int32.self)
             let tokenInput = LMInput.Text(tokens: MLXArray([lastToken]))
@@ -418,8 +418,8 @@ public struct MambaSpeculativeGenerator: Sendable {
     private func getNextToken(
         previousToken: Int,
         targetCache: [KVCache]
-    ) async throws -> Int {
-        try await modelPair.withTargetModel { model in
+    ) async -> Int {
+        await modelPair.withTargetModel { model in
             let input = LMInput.Text(tokens: MLXArray([Int32(previousToken)]))
             let output = model(input[text: .newAxis], cache: targetCache, state: nil)
             let logits = output.logits[0..., -1, 0...].squeezed(axis: 0)
@@ -442,8 +442,8 @@ public struct MambaSpeculativeGenerator: Sendable {
         previousToken: Int,
         draftTokens: [Int],
         targetCache: [KVCache]
-    ) async throws -> MLXArray {
-        try await modelPair.withTargetModel { model in
+    ) async -> MLXArray {
+        await modelPair.withTargetModel { model in
             let allTokens = [Int32(previousToken)] + draftTokens.map { Int32($0) }
             let input = LMInput.Text(tokens: MLXArray(allTokens))
             let output = model(input[text: .newAxis], cache: targetCache, state: nil)
