@@ -172,13 +172,12 @@ The key insight is that verification is parallelizable - the target model can ch
 
 ## Performance
 
-Typical results on Apple Silicon:
+Results on MacBook Pro M4 Pro with Qwen3 models:
 
-| Device | Draft | Target | Speedup | Acceptance |
-|--------|-------|--------|---------|------------|
-| M1 Pro | 0.5B | 7B | 2.1x | 72% |
-| M2 Max | 0.5B | 7B | 2.4x | 75% |
-| M3 Max | 1B | 8B | 2.6x | 78% |
+| Drafter | Target | Speed | Acceptance | Tokens/Step |
+|---------|--------|-------|------------|-------------|
+| Qwen3-0.6B | Qwen3-4B | 81.4 tok/s | 76.3% | 4.85 |
+| Mamba-130M | Qwen3-4B | 98.1 tok/s | 100% | 6.05 |
 
 Speedup depends on:
 - Draft/target model size ratio
@@ -234,19 +233,19 @@ let result = try await generator.generate(prompt: "Hello") { _ in .more }
 
 ### Benchmark Results
 
-Comparing Mamba (130M) vs Transformer (500M) as draft models with Qwen3-4B target:
+Comparing Mamba (130M) vs Transformer (0.6B) as draft models with Qwen3-4B target on MacBook Pro M4 Pro:
 
 | Drafter | Speed | Acceptance | Tokens/Step |
 |---------|-------|------------|-------------|
-| **Transformer (0.5B)** | 38.7 tok/s | 27.6% | 2.40 |
-| **Mamba (130M)** | 80.1 tok/s | 91.3% | 5.61 |
+| **Transformer (0.6B)** | 81.4 tok/s | 76.3% | 4.85 |
+| **Mamba (130M)** | 98.1 tok/s | 100% | 6.05 |
 
-**Result: Mamba achieves 2.07x speedup** with significantly higher acceptance rates.
+**Result: Mamba achieves 1.21x speedup** with higher acceptance rates.
 
 #### Why Mamba Performs Well
 
 1. **Faster drafting**: 130M Mamba is smaller with O(1) memory per token
-2. **High acceptance**: Nearly all drafted tokens (5.6/step) are accepted
+2. **High acceptance**: Nearly all drafted tokens (6.05/step) are accepted
 3. **Efficient verification**: More tokens per target model forward pass
 
 #### Benchmark Command
