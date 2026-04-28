@@ -54,7 +54,7 @@ public final class DraftTargetPair: @unchecked Sendable {
     }
     
     /// Get tokenizer
-    public var tokenizer: Tokenizer {
+    public var tokenizer: any Tokenizer {
         get async {
             await targetContainer.perform { $0.tokenizer }
         }
