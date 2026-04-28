@@ -29,13 +29,13 @@ public final class MambaDrafter: @unchecked Sendable {
     private var cache: MambaCache
 
     /// Tokenizer for the model
-    public let tokenizer: Tokenizer
+    public let tokenizer: any Tokenizer
 
     /// Lock for thread safety
     private let lock = NSLock()
 
     /// Initialize with a loaded model
-    public init(model: MambaLM, config: MambaConfig, tokenizer: Tokenizer) {
+    public init(model: MambaLM, config: MambaConfig, tokenizer: any Tokenizer) {
         self.model = model
         self.config = config
         self.tokenizer = tokenizer
@@ -211,7 +211,7 @@ public final class MambaDraftTargetPair: @unchecked Sendable {
     }
 
     /// Get the target model's tokenizer
-    public var targetTokenizer: Tokenizer {
+    public var targetTokenizer: any Tokenizer {
         get async {
             await targetContainer.perform { $0.tokenizer }
         }

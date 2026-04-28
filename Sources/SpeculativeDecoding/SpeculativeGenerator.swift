@@ -304,7 +304,7 @@ public struct SpeculativeGenerateResult: Sendable {
     public var acceptanceRate: Float { statistics.acceptanceRate }
     public var tokensPerSecond: Double { statistics.tokensPerSecond }
     
-    public func decode(with tokenizer: Tokenizer) -> String {
+    public func decode(with tokenizer: any Tokenizer) -> String {
         tokenizer.decode(tokens: tokens)
     }
     
@@ -327,11 +327,11 @@ public enum SpeculativeGenerationEvent: Sendable {
 }
 
 struct NaiveStreamingDetokenizer {
-    private let tokenizer: Tokenizer
+    private let tokenizer: any Tokenizer
     private var tokens: [Int] = []
     private var lastDecodedLength: Int = 0
     
-    init(tokenizer: Tokenizer) { self.tokenizer = tokenizer }
+    init(tokenizer: any Tokenizer) { self.tokenizer = tokenizer }
     
     mutating func append(token: Int) { tokens.append(token) }
     
